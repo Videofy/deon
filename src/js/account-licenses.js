@@ -144,7 +144,7 @@ function submitAddLicense (e, el) {
         suspicous = true
         errs.push('Commercial usage requires a <a href="/sync">Commercial License</a>')
       }
-      if (!data.confirm){
+      if (!data.confirm && data.identity) {
         suspicous = true
         errs.push('Please confirm that you are the owner of this channel')
         confirmBox.classList.remove('hide')
@@ -154,7 +154,7 @@ function submitAddLicense (e, el) {
         requestWithFormData({
           url: 'https://submit.monstercat.com',
           method: 'POST',
-          data: Object.assign({}, data, {type: 'suspicious_license', userId: session.user._id})
+          data: Object.assign({}, data, {type: 'suspicious_license', userId: session.user._id, confirmOwner: !data.confirm})
         }, () => {})
       }
       console.log('errs',errs)
