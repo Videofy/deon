@@ -132,6 +132,7 @@ function submitAddLicense (e, el) {
     },
     validate: (data, errs) => {
       let suspicous = false
+      var confirmBox = findNode('.confirm')
       if (!data.category) {
         errs.push('Please select what category your channel is in')
       }
@@ -143,6 +144,11 @@ function submitAddLicense (e, el) {
         suspicous = true
         errs.push('Commercial usage requires a <a href="/sync">Commercial License</a>')
       }
+      if (!data.confirm){
+        suspicous = true
+        errs.push('Please confirm that you are the owner of this channel')
+        confirmBox.classList.remove('hide')
+      }
 
       if (data.identity && suspicous) {
         requestWithFormData({
@@ -151,6 +157,7 @@ function submitAddLicense (e, el) {
           data: Object.assign({}, data, {type: 'suspicious_license', userId: session.user._id})
         }, () => {})
       }
+      console.log('errs',errs)
       return errs
     },
     success: (result) => {
@@ -162,6 +169,7 @@ function submitAddLicense (e, el) {
       var form = findNode("[role='form-submit']")
       var empty = findNode("[role='no-licenses']")
       var emptyCard = findNode('.card-msg')
+      var confirmBox = findNode('.confirm')
 
       node.setAttribute("data-whitelist-id", result._id)
       node.setAttribute("role", "whitelist-panel")
@@ -169,6 +177,7 @@ function submitAddLicense (e, el) {
       render("license-card-row", result, cardNode)
       tbody.appendChild(node)
       card.appendChild(cardNode)
+      confirmBox.classList.add('hide')
       form.reset()
       toasty("License succesfully added! Please wait up to 48 hours.")
       if (tbody.children.length >= 1){
